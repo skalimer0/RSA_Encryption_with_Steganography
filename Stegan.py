@@ -1,7 +1,5 @@
 from PIL import Image
 def Encode(img, msg, lst):
-    global L
-    L = []
     length=len(msg)
     if length > 255:
         print("Text too long! (don't exeed 255 characters)")
@@ -16,38 +14,48 @@ def Encode(img, msg, lst):
     for row in range(height):
         for col in range(width):
             r, g, b = img.getpixel((col, row))
-            if row == 0 and col == 0 and index < length:
-                asc = length
-            elif index <= length:
-                c = lst[index - 1]
-                asc = c // 255
-                # Storing remainder value, used for decoding
-                L += [c % 255]
-            else:
-                asc = r
-            encoded_img.putpixel((col, row), (asc, g, b))
+            r = r >> 2
+            r = r << 2
+            g = g >> 2
+            g = g << 2
+            b = b >> 3
+            b = b << 3
+            if index < length:
+                c = lst[index]
+                cb = c >> 4
+                b = b | cb
+                cb = cb << 4
+                cg = (c - cb) >> 2
+                g = g | cg
+                cg = cg << 2
+                cr = (c - cb - cg)
+                r = r | cr
+            elif index == length:
+                b = b | 7
+                g = g | 3
+                r = r | 3 
+            encoded_img.putpixel((col, row), (r, g, b))
             index += 1
     return encoded_img
-
 
 # Decode function of Steganography
 
 def Decode(img):
-    global L
     width, height = img.size
-    msg = ""
     lst = []
-    index = 0
-    length = 0
     for row in range(height):
         for col in range(width):
             try:
                 r, g, b = img.getpixel((col, row))
             except ValueError:
                 r, g, b, a = img.getpixel((col, row))
-            if row == 0 and col == 0:
-                length = r
-            elif index <= length:
-                lst += [r * 255 + L[index - 1]]
-            index += 1
+            cr = r & 3
+            cb = b & 7
+            cg = g & 3
+            cb = cb << 4
+            cg = cg << 2
+            value = cb + cg + cr
+            if (value == 127):
+                return lst
+            lst += [value]
     return lst

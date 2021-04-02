@@ -2,8 +2,7 @@ import random
 from PIL import Image
 from Stegan import Encode, Decode
 import math
-letter = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",",",".","!","?"," "]
-number = ["01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31"]
+
 def cipher(num,e):
     for i in range(len(num)):
         X.append((int(num[i])**e)%n)
@@ -21,7 +20,7 @@ def phi(n):
             amount += 1
     return amount
 def Decrypt():
-    global i,j,Y
+    global i,Y
     Y=[]
     encoded_image_file = "enc_2.png"
     img2 = Image.open(encoded_image_file)
@@ -31,23 +30,21 @@ def Decrypt():
     decipher(hidden_text,d)
     numD=[]
     for i in range(len(Y)):
-        for j in range(len(number)):
-            if(Y[i]==int(number[j])):
-                numD.append(letter[j])
+       numD.append(chr(Y[i] + 32))
     for i in numD:
         print(i,end="")
-    print("\n")
+    print("\n")   
 def Encrypt():
 # encrypts a plaintext message using the current key
-    global plaintext, numC, j, X
+    global plaintext, numC, X
     X=[]
     plaintext = (input("Enter Plaintext :"))
     plaintext = (plaintext.lower())
     numC = []
     for i in range(len(plaintext)):
-        for j in range(len(letter)):
-            if(plaintext[i]==letter[j]):
-                numC.append(number[j])
+        ascii_code = ord(plaintext[i])
+        if (ascii_code >= 32 and ascii_code <= 127):
+            numC.append(str(ascii_code - 32))
     cipher(numC,e)
     print("Ciphertext:", X)
     print("Number of Ciphertext blocks:", len(X))
@@ -60,9 +57,9 @@ def Encrypt():
         img_encoded.save(encoded_image_file)
         print("{} saved!".format(encoded_image_file))
 
-n = 2537
-e = 13
-d = 937
+n = 95
+e = 11
+d = 59
 
 print("To redefine n,e, or d, type 'n','e',... etc.")
 print("To encrypt a message with the current key, type 'Encrypt'")
