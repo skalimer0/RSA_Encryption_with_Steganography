@@ -1,15 +1,15 @@
 from PIL import Image
 def Encode(img, msg, lst):
     length=len(msg)
-    if length > 255:
-        print("Text too long! (don't exeed 255 characters)")
+    width, height = img.size
+    if length > width*height:
+        print("Text too long! (don't exeed " + str(width*height) + " characters)")
         return False
     if img.mode != 'RGB':
         print("Image mode needs to be RGB")
         return False
     # Making deep copy of image to make encryption! with original image intact
     encoded_img = img.copy()
-    width, height = img.size
     index = 0
     for row in range(height):
         for col in range(width):

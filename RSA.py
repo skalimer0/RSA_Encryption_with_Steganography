@@ -39,7 +39,6 @@ def Encrypt():
     global plaintext, numC, X
     X=[]
     plaintext = (input("Enter Plaintext :"))
-    plaintext = (plaintext.lower())
     numC = []
     for i in range(len(plaintext)):
         ascii_code = ord(plaintext[i])
