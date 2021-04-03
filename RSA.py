@@ -3,29 +3,56 @@ from PIL import Image
 from Stegan import Encode, Decode
 import math
 
+def isPrime(nu) :
+    if (nu <= 1) :
+        return False
+    if (nu <= 3) :
+        return True
+    if (nu % 2 == 0 or nu % 3 == 0) :
+        return False
+    i = 5
+    while(i * i <= nu) :
+        if (nu % i == 0 or nu % (i + 2) == 0) :
+            return False
+        i = i + 6
+    return True
+
+def egcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = egcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
+def modinv(a, m):
+    g, x, _ = egcd(a, m)
+    if g != 1:
+        raise Exception('modular inverse does not exist')
+    else:
+        return x % m
+
+def bezout(a, b):
+    if a == 0 and b == 0: 
+        return (0, 0, 0)
+    if b == 0: 
+        return (a/abs(a), 0, abs(a))
+    (u, v, p) = bezout(b, a%b)
+    return (v, (u - v*(a/b)), p)
+
 def cipher(num,e):
     for i in range(len(num)):
         X.append((int(num[i])**e)%n)
 def decipher(num,d):
     for i in range(len(num)):
         Y.append((int(num[i])**d)%n)
-def gcd(a, b):
-    while b != 0:
-        (a, b)=(b, a % b)
-    return a
-def phi(n):
-    amount = 0
-    for k in range(1, n + 1):
-        if math.gcd(n, k) == 1:
-            amount += 1
-    return amount
-def Decrypt():
+
+def DecryptAscii():
     global i,Y
     Y=[]
-    encoded_image_file = "enc_2.png"
+    encoded_image_file = (input("File to decrypt :"))
     img2 = Image.open(encoded_image_file)
     print(img2, img2.mode)
-    hidden_text = Decode(img2)
+    hidden_text = Decode(img2, n)
     print(hidden_text)
     decipher(hidden_text,d)
     numD=[]
@@ -34,11 +61,12 @@ def Decrypt():
     for i in numD:
         print(i,end="")
     print("\n")   
-def Encrypt():
+
+def EncryptAscii():
 # encrypts a plaintext message using the current key
     global plaintext, numC, X
     X=[]
-    plaintext = (input("Enter Plaintext :"))
+    plaintext = (input("Enter Text (Ascii Printable Characters):"))
     numC = []
     for i in range(len(plaintext)):
         ascii_code = ord(plaintext[i])
@@ -47,71 +75,84 @@ def Encrypt():
     cipher(numC,e)
     print("Ciphertext:", X)
     print("Number of Ciphertext blocks:", len(X))
-    original_image_file = "2.png"
+    original_image_file = (input("File to encrypt :"))
     img = Image.open(original_image_file)
     print(img, img.mode)
     encoded_image_file = "enc_" + original_image_file
-    img_encoded = Encode(img, plaintext, X)
+    img_encoded = Encode(img, plaintext, X, n)
     if img_encoded:
         img_encoded.save(encoded_image_file)
         print("{} saved!".format(encoded_image_file))
 
-n = 95
+def menu():
+    print("To redefine p,q,e, type 'p','q',... etc.")
+    print("To encrypt a ascii message with the current key, type 'EncryptAscii'")
+    print("To decrypt a ascii message with the current key, type 'DecryptAscii'")
+    print("Type quit to exit")
+    print('\n')
+    print('\n')
+
+p = 5
+q = 19
+n = p * q
+phi_n = (p - 1) * (q - 1)
 e = 11
 d = 59
 
-print("To redefine n,e, or d, type 'n','e',... etc.")
-print("To encrypt a message with the current key, type 'Encrypt'")
-print("To decrypt a message with the current key, type 'Decrypt'")
-print("Type quit to exit")
-print('\n')
-print('\n')
+print(7 - '11100111'.rfind('0'))
+menu()
 mm = str()
 mm = str()
 while mm != 'quit':
     mm = input("Enter Command: ")
-    if mm.lower() == 'encrypt':
-        Encrypt()
-    elif mm.lower() == 'decrypt':
-        Decrypt()
-    elif mm.lower() == 'n':
+    if mm.lower() == 'encryptascii':
+        EncryptAscii()
+    elif mm.lower() == 'decryptascii':
+        DecryptAscii()
+    elif mm.lower() == 'p':
         try:
-            print('current n = ', n)
-            n1 = int(input(" Enter a value for n:"))
-            if	n1<2 :
-                print('Invalid input')
+            print('current p = ', p)
+            p1 = int(input(" Enter a value for p:"))
+            if p1 != q and (isPrime(p1)):
+                p=p1
+                n = p * q
+                phi_n = (p - 1) * (q - 1)
+                print('p set to :', p)
+                print('n set to :', n)
+                print('phi(n) set to :', phi_n)
             else :
-                n=n1
-                print('n set to :',n)
+                print('Invalid input, p need to be prime and diffrent of q')
+        except ValueError:
+            print('please enter a number')
+    elif mm.lower() == 'q':
+        try:
+            print('current q = ', q)
+            q1 = int(input(" Enter a value for q:"))
+            if q1 != p and (isPrime(q1)):
+                q=q1
+                n = p * q
+                phi_n = (p - 1) * (q - 1)
+                print('q set to :', q)
+                print('n set to :', n)
+                print('phi(n) set to :', phi_n)
+            else :
+                print('Invalid input, q need to be prime and different of p')
         except ValueError:
             print('please enter a number')
     elif mm.lower() == 'help':
-        print("To redefine n,e, or d, type 'n','e',... etc.")
-        print("To encrypt a message with the current key, type 'Encrypt'")
-        print("To decrypt a message with the current key, type 'Decrypt'")
-        print("Type quit to exit")
-        print('\n')
-        print('\n')
+        menu()
     elif mm.lower() == 'e':
         try:
             print('current e = ', e)
             e1 = int(input(" Enter a value for e :"))
-            if	e1<= 2 or gcd(phi(n),e1)!=1:
-                print('Invalid input')
+            (u, _, p) = bezout(e1, phi_n)
+            if p != 1: 
+                print("%s and %s are not prime among themselves" % (e1, phi_n))
             else :
                 e=e1
+                d = modinv(e, phi_n)
                 print('e set to :', e)
-        except ValueError:
-            print('please enter a number')
-    elif mm.lower() == 'd':
-        try:
-            print('current d = ', d)
-            d1 = int(input(" Enter a value for d :"))
-            if d1 <= 0 and (e*d1)%phi(n)!=1:
-                print('Invalid input')
-            else:
-                d=d1
-                print('d set to :',d)
+                print('d set to :', d)
         except ValueError:
             print('please enter a number')
     else:
