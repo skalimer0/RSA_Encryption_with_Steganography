@@ -88,6 +88,7 @@ def Encode(img, msg, lst, n):
                 g = g << gbit
                 b = b >> bbit 
                 b = b << bbit
+                binary_index += 1
 
             encoded_img.putpixel((col, row), (r, g, b))
     return encoded_img
@@ -127,8 +128,10 @@ def Decode(img, n):
                     temp_binary += formb.format(valueb)
                 binary_value += temp_binary
     index = 0
-    index_last_value = binary_value.rfind('1')
-    while index + bitLen < index_last_value + bitLen:
+    while index + bitLen < len(binary_value):
+        value = int(binary_value[index:index+bitLen], 2)
+        if value == 0:
+            return lst
         lst += [int(binary_value[index:index+bitLen], 2)]
         index += bitLen
     return lst

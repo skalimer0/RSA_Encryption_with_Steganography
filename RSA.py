@@ -46,7 +46,7 @@ def decipher(num,d):
     for i in range(len(num)):
         Y.append((int(num[i])**d)%n)
 
-def DecryptAscii():
+def DecryptUnicodeText():
     global i,Y
     Y=[]
     encoded_image_file = (input("File to decrypt :"))
@@ -57,21 +57,21 @@ def DecryptAscii():
     decipher(hidden_text,d)
     numD=[]
     for i in range(len(Y)):
-       numD.append(chr(Y[i] + 32))
+       numD.append(chr(Y[i]))
     for i in numD:
         print(i,end="")
     print("\n")   
 
-def EncryptAscii():
+def EncryptUnicodeText():
 # encrypts a plaintext message using the current key
     global plaintext, numC, X
     X=[]
-    plaintext = (input("Enter Text (Ascii Printable Characters):"))
+    plaintext = (input("Enter Text (Unicode):"))
     numC = []
     for i in range(len(plaintext)):
-        ascii_code = ord(plaintext[i])
-        if (ascii_code >= 32 and ascii_code <= 127):
-            numC.append(str(ascii_code - 32))
+        unicode = ord(plaintext[i])
+        if (unicode >= 32):
+            numC.append(str(unicode))
     cipher(numC,e)
     print("Ciphertext:", X)
     print("Number of Ciphertext blocks:", len(X))
@@ -86,18 +86,18 @@ def EncryptAscii():
 
 def menu():
     print("To redefine p,q,e, type 'p','q',... etc.")
-    print("To encrypt a ascii message with the current key, type 'EncryptAscii'")
-    print("To decrypt a ascii message with the current key, type 'DecryptAscii'")
+    print("To encrypt a unicode message with the current key, type 'EncryptText'")
+    print("To decrypt a unicode message with the current key, type 'DecryptText'")
     print("Type quit to exit")
     print('\n')
     print('\n')
 
-p = 5
-q = 19
+p = 347
+q = 257
 n = p * q
 phi_n = (p - 1) * (q - 1)
-e = 11
-d = 59
+e = 1531
+d = 11571
 
 print(7 - '11100111'.rfind('0'))
 menu()
@@ -105,10 +105,10 @@ mm = str()
 mm = str()
 while mm != 'quit':
     mm = input("Enter Command: ")
-    if mm.lower() == 'encryptascii':
-        EncryptAscii()
-    elif mm.lower() == 'decryptascii':
-        DecryptAscii()
+    if mm.lower() == 'encrypttext':
+        EncryptUnicodeText()
+    elif mm.lower() == 'decrypttext':
+        DecryptUnicodeText()
     elif mm.lower() == 'p':
         try:
             print('current p = ', p)
