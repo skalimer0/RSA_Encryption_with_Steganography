@@ -18,8 +18,8 @@ def Encode(img, msg, lst, n):
     width, height = img.size
     bitLen, _ = bitLenCount(n)
     form = "{0:0" + str(bitLen) + "b}"
-    print("We need %s bits to encode a value" % (bitLen))
-    print("We need %s bits to encode the message" % (bitLen * length))
+    print("We need %s bits to write a value" % (bitLen))
+    print("We need %s bits to write the message" % (bitLen * length))
 
     if (bitLen * length) + 2 > (24 * width * height):
         print("Make your choice: Text too long or RSA too strong or image too small!")
@@ -100,6 +100,7 @@ def Decode(img, n):
     if img.mode != 'RGB':
         print("Image mode needs to be RGB")
         return False
+        
     width, height = img.size
     bitLen, _ = bitLenCount(n)
     lst = []
@@ -118,17 +119,12 @@ def Decode(img, n):
                 bbit = 7 - binR.rfind('0')
                 formb = "{0:0" + str(rbit) + "b}"
             else:
-                valuer = r & ((2 ** rbit) - 1)
-                valueg = g & ((2 ** gbit) - 1)
-                valueb = b & ((2 ** bbit) - 1)
-                temp_binary = ""
                 if rbit > 0:
-                    temp_binary += formr.format(valuer)
+                    binary_value += formr.format(r & ((2 ** rbit) - 1))
                 if gbit > 0:
-                    temp_binary += formg.format(valueg)
+                    binary_value += formg.format(g & ((2 ** gbit) - 1))
                 if bbit > 0:
-                    temp_binary += formb.format(valueb)
-                binary_value += temp_binary
+                    binary_value += formb.format(b & ((2 ** bbit) - 1))
     index = 0
     while index + bitLen < len(binary_value):
         value = int(binary_value[index:index+bitLen], 2)
