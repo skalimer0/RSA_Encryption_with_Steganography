@@ -45,6 +45,7 @@ def Encode(img, msg, lst, n):
     # Making deep copy of image to make encryption! with original image intact
     encoded_img = img.copy()
     binary_index = 0
+    end_text_index = 0
     for row in range(height):
         for col in range(width):
             r, g, b = img.getpixel((col, row))
@@ -79,8 +80,7 @@ def Encode(img, msg, lst, n):
                     value =  int(binaryValues[binary_index:binary_index+bbit], 2)
                     b = b | value
                     binary_index += bbit
-
-            elif binary_index == len(binaryValues):
+            elif end_text_index < bitLen:
                 # to know how many bits by color is used
                 r = r >> rbit
                 r = r << rbit
@@ -88,7 +88,9 @@ def Encode(img, msg, lst, n):
                 g = g << gbit
                 b = b >> bbit 
                 b = b << bbit
-                binary_index += 1
+                end_text_index += rbit
+                end_text_index += gbit
+                end_text_index += bbit
 
             encoded_img.putpixel((col, row), (r, g, b))
     return encoded_img
@@ -132,6 +134,6 @@ def Decode(img, n):
         value = int(binary_value[index:index+bitLen], 2)
         if value == 0:
             return lst
-        lst += [int(binary_value[index:index+bitLen], 2)]
+        lst += [value]
         index += bitLen
     return lst
