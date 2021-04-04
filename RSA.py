@@ -99,7 +99,6 @@ phi_n = (p - 1) * (q - 1)
 e = 1531
 d = 11571
 
-print(7 - '11100111'.rfind('0'))
 menu()
 mm = str()
 mm = str()
