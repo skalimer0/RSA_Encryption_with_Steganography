@@ -42,19 +42,20 @@ def bezout(a, b):
 def cipher(num,e):
     for i in range(len(num)):
         X.append((int(num[i])**e)%n)
+        
 def decipher(num,d):
     for i in range(len(num)):
         Y.append((int(num[i])**d)%n)
 
-def DecryptUnicodeText():
+def DecryptText():
     global i,Y
     Y=[]
     encoded_image_file = (input("File to decrypt :"))
     img2 = Image.open(encoded_image_file)
     print(img2, img2.mode)
     hidden_text = Decode(img2, n)
-    print(hidden_text)
     decipher(hidden_text,d)
+    print("Number of Ciphertext blocks:", len(Y))
     numD=[]
     for i in range(len(Y)):
        numD.append(chr(Y[i]))
@@ -62,8 +63,8 @@ def DecryptUnicodeText():
         print(i,end="")
     print("\n")   
 
-def EncryptUnicodeText():
-# encrypts a plaintext message using the current key
+def EncryptText():
+    # encrypts a plaintext message using the current key
     global plaintext, numC, X
     X=[]
     plaintext = (input("Enter Text (Unicode):"))
@@ -73,13 +74,12 @@ def EncryptUnicodeText():
         if (unicode >= 32):
             numC.append(str(unicode))
     cipher(numC,e)
-    print("Ciphertext:", X)
     print("Number of Ciphertext blocks:", len(X))
     original_image_file = (input("File to encrypt :"))
     img = Image.open(original_image_file)
     print(img, img.mode)
     encoded_image_file = "enc_" + original_image_file
-    img_encoded = Encode(img, plaintext, X, n)
+    img_encoded = Encode(img, len(plaintext), X, n)
     if img_encoded:
         img_encoded.save(encoded_image_file)
         print("{} saved!".format(encoded_image_file))
@@ -96,8 +96,8 @@ p = 347
 q = 257
 n = p * q
 phi_n = (p - 1) * (q - 1)
-e = 1531
-d = 11571
+e = 5721
+d = 3561
 
 menu()
 mm = str()
@@ -105,9 +105,9 @@ mm = str()
 while mm != 'quit':
     mm = input("Enter Command: ")
     if mm.lower() == 'encrypttext':
-        EncryptUnicodeText()
+        EncryptText()
     elif mm.lower() == 'decrypttext':
-        DecryptUnicodeText()
+        DecryptText()
     elif mm.lower() == 'p':
         try:
             print('current p = ', p)
