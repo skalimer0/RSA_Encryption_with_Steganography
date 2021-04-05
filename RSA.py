@@ -84,6 +84,43 @@ def EncryptText():
         img_encoded.save(encoded_image_file)
         print("{} saved!".format(encoded_image_file))
 
+def DecryptBinary():
+    global i,Y
+    Y=[]
+    encoded_image_file = (input("File to decrypt :"))
+    img2 = Image.open(encoded_image_file)
+    print(img2, img2.mode)
+    hidden = Decode(img2, 255)
+
+    extracted_file = (input("New extracted filename :"))
+    newfile=open(extracted_file,'wb')
+    for i in range(len(hidden)):
+        newfile.write(hidden[i].to_bytes(1, byteorder='big'))
+    newfile.close
+    print("Extract OK")   
+
+def EncryptBinary():
+    # encrypts a file using the current key
+    global plaintext, numC, X
+    X=[]
+    numC = []
+    index = 0
+    file_to_hide = (input("File to hide:"))
+    with open(file_to_hide, "rb") as f:
+        while (bytes_read := f.read(1)):
+            for b in bytes_read:
+                numC.append(b)
+                index+=1
+    f.close
+    original_image_file = (input("File to encrypt :"))
+    img = Image.open(original_image_file)
+    print(img, img.mode)    
+    encoded_image_file = "enc_" + original_image_file
+    img_encoded = Encode(img, index, numC, 255)
+    if img_encoded:
+        img_encoded.save(encoded_image_file)
+        print("{} saved!".format(encoded_image_file))
+
 def menu():
     print("To redefine p,q,e, type 'p','q',... etc.")
     print("To encrypt a unicode message with the current key, type 'EncryptText'")
@@ -108,6 +145,10 @@ while mm != 'quit':
         EncryptText()
     elif mm.lower() == 'decrypttext':
         DecryptText()
+    if mm.lower() == 'storefile':
+        EncryptBinary()
+    elif mm.lower() == 'extractfile':
+        DecryptBinary()
     elif mm.lower() == 'p':
         try:
             print('current p = ', p)
