@@ -14,7 +14,7 @@ def Encode(img, length, lst, n):
         print("Image mode needs to be RGB")
         return False
 
-    fileSizeNbByteEncode = 24
+    fileSizeNbByteEncode = 32
     width, height = img.size
     bitLen, _ = bitLenCount(n)
     form = "{0:0" + str(bitLen) + "b}"
@@ -145,7 +145,7 @@ def Decode(img, n):
     bitLen, _ = bitLenCount(n)
     messageSize = img_size
     indexData = 0
-    fileSizeNbByteEncode = 24
+    fileSizeNbByteEncode = 32
     dataSize = fileSizeNbByteEncode
     for row in range(height):
         for col in range(width):
@@ -175,13 +175,17 @@ def Decode(img, n):
                             else:
                                 messageSize = int(binary_value, 2)
                                 dataSize = bitLen
-                                indexData = 1
+                                indexData = 0
                                 print("%s bits used by the data" % (messageSize))
                             if r & (2 ** i) > 0:
                                 binary_value = "1"
                             else:
                                 binary_value = "0"
                             index = 1
+                            indexData += 1
+                    elif indexData == messageSize:
+                        lst += [int(binary_value, 2)]
+                        indexData += 1
                 if gbit > 0:
                     for i in range(gbit-1,-1,-1):
                         if indexData < messageSize:
@@ -198,13 +202,17 @@ def Decode(img, n):
                                 else:
                                     messageSize = int(binary_value, 2)
                                     dataSize = bitLen
-                                    indexData = 1
+                                    indexData = 0
                                     print("%s bits used by the data" % (messageSize))
                                 if g & (2 ** i) > 0:
                                     binary_value = "1"
                                 else:
                                     binary_value = "0"
                                 index = 1
+                                indexData += 1
+                        elif indexData == messageSize:
+                            lst += [int(binary_value, 2)]
+                            indexData += 1
                 if bbit > 0:
                     for i in range(bbit-1,-1,-1):
                         if indexData < messageSize:
@@ -221,11 +229,15 @@ def Decode(img, n):
                                 else:
                                     messageSize = int(binary_value, 2)
                                     dataSize = bitLen
-                                    indexData = 1
+                                    indexData = 0
                                     print("%s bits used by the data" % (messageSize))
                                 if b & (2 ** i) > 0:
                                     binary_value = "1"
                                 else:
                                     binary_value = "0"
                                 index = 1
+                                indexData += 1
+                        elif indexData == messageSize:
+                            lst += [int(binary_value, 2)]
+                            indexData += 1
     return lst
